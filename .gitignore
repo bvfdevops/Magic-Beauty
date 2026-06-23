@@ -1,0 +1,31 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# Editores
+.vscode/
+.idea/
+*.suo
+*.user
+
+# Configuración local del agente
+.claude/
+
+# Logs y temporales
+*.log
+npm-debug.log*
+
+# Dependencias (si en el futuro se agrega npm)
+node_modules/
+
+# Variables de entorno (nunca versionar credenciales)
+.env
+.env.local
+
+# Build (si en el futuro se compila Tailwind)
+dist/

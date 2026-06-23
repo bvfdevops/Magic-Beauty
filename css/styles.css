@@ -1,0 +1,536 @@
+/* ============================================================
+   Magic Beauty — Estilos personalizados
+   Archivo: css/styles.css
+
+   Dirección visual: Glam oscuro — SOLO negro + dorado.
+   Paleta:
+     ink    #121110  negro base
+     char   #1B1917  carbón (tarjetas)
+     gold   #C9A24B  dorado (acentos y botones)
+     goldlt #E3C77A  dorado claro
+     cream  #F4EFE7  crema (texto principal)
+     warm   #B8AE9E  gris cálido (texto secundario)
+     hair   #2A2724  líneas / bordes
+
+   Las clases utilitarias (colores, espaciados, tipografía) las aporta
+   Tailwind configurado en js/tailwind.config.js. Aquí va solo lo propio.
+
+   Nota de rendimiento: solo se animan propiedades baratas en GPU
+   (transform / opacity). Los desenfoques son moderados y cada capa
+   animada se promueve con will-change para no re-rasterizar por frame.
+
+   Secciones:
+     1. Base global
+     2. Fondo ambiental animado (glows + grid de puntos + destellos)
+     3. Detalles dorados (línea separadora + degradado de título)
+     4. Micro-interacciones (tarjetas, botones)
+     5. Aparición al hacer scroll (clase .reveal)
+     6. Accesibilidad y prefers-reduced-motion
+   ============================================================ */
+
+
+/* ==================== 1. Base global ==================== */
+html  { scroll-behavior: smooth; background: #121110; }
+body  { color: #F4EFE7; font-family: 'Montserrat', sans-serif; position: relative; }
+.hairline { border-color: #2A2724; }
+
+/* Recuadros (tarjetas) tipo "vidrio esmerilado": negro semitransparente con
+   el fondo animado difuminado por detrás. Se aplica a los contenedores
+   estáticos (no al panel deslizante de servicios) para cuidar el rendimiento. */
+.bg-char,
+.svc-carousel {
+  background-color: rgba(16, 15, 14, 0.62) !important;
+  -webkit-backdrop-filter: blur(6px);
+          backdrop-filter: blur(6px);
+}
+
+
+/* ==================== 2. Fondo ambiental animado ==================== */
+
+/* Contenedor fijo para glows y destellos */
+.bg-fx { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+
+/* Manchas de luz difusa. Desenfoque moderado y cada una en su propia capa
+   (will-change) para que el blur se rasterice una vez y solo se traslade. */
+.glow   { position: absolute; border-radius: 50%; filter: blur(32px); will-change: transform; }
+.glow-1 { width: 420px; height: 420px; top: -120px; left: -100px;
+          background: radial-gradient(circle, #C9A24B5e, transparent 70%);
+          animation: drift1 26s ease-in-out infinite; }
+.glow-2 { width: 380px; height: 380px; bottom: -130px; right: -110px;
+          background: radial-gradient(circle, #7a5a1f55, transparent 70%);
+          animation: drift2 31s ease-in-out infinite; }
+.glow-3 { width: 320px; height: 320px; top: 44%; left: 56%;
+          background: radial-gradient(circle, #E3C77A33, transparent 70%);
+          animation: drift3 36s ease-in-out infinite; }
+
+@keyframes drift1 { 0%,100% { transform: translate3d(0,0,0); }      50% { transform: translate3d(50px,38px,0); } }
+@keyframes drift2 { 0%,100% { transform: translate3d(0,0,0); }      50% { transform: translate3d(-46px,-28px,0); } }
+@keyframes drift3 { 0%,100% { transform: translate3d(0,0,0) scale(1); } 50% { transform: translate3d(-38px,26px,0) scale(1.1); } }
+
+/* Textura de puntos (estática, barata) */
+.bg-grid { position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: .9;
+           background-image: radial-gradient(#C9A24B2e 1.3px, transparent 1.3px);
+           background-size: 34px 34px; }
+
+/* Destellos flotantes (se generan dinámicamente en js/main.js) */
+.sparkle { position: absolute; border-radius: 50%; background: #E3C77A;
+           box-shadow: 0 0 6px #C9A24B; opacity: 0; will-change: transform, opacity;
+           animation: rise linear infinite; }
+@keyframes rise {
+  0%   { transform: translate3d(0,20px,0)  scale(.5); opacity: 0; }
+  12%  { opacity: .9; }
+  85%  { opacity: .6; }
+  100% { transform: translate3d(0,-130px,0) scale(1); opacity: 0; }
+}
+
+/* Ramas decorativas (SVG fijo en el fondo). Color apagado (#2F2716) y discreto:
+   acompañan sin competir. Estáticas: sin animación = sin capa que componer. */
+.plant { position: absolute; color: #2F2716; opacity: .9; pointer-events: none;
+         transform-origin: bottom center; }
+
+/* Tamaño fluido: en celular las ramas se achican para no tapar la pantalla */
+.plant-1 { width: clamp(150px, 42vw, 290px); bottom: -28px; left: -8vw;   transform: rotate(24deg); }
+.plant-2 { width: clamp(190px, 52vw, 360px); bottom: -44px; right: -10vw; transform: rotate(-26deg) scaleX(-1);
+           animation-duration: 15s; animation-delay: -4s; }
+.plant-3 { width: clamp(120px, 32vw, 220px); top: -34px; right: 14%;      transform: rotate(176deg);
+           animation-duration: 18s; animation-delay: -8s; opacity: .22; }
+
+@media (min-width: 768px) {
+  .plant-1 { bottom: -50px; left: -55px; }
+  .plant-2 { bottom: -80px; right: -70px; }
+  .plant-3 { top: -60px; }
+}
+
+/* Destellos con forma (estrella ✦ y flor ❀), del rubro belleza.
+   Sin sombra/brillo: estilo minimalista. */
+.sparkle-glyph { position: absolute; color: #C9A24B; opacity: 0; pointer-events: none;
+                 will-change: transform, opacity;
+                 animation: rise-sway linear infinite; }
+@keyframes rise-sway {
+  0%   { transform: translate3d(0, 24px, 0) rotate(0deg)   scale(.6); opacity: 0; }
+  15%  { opacity: .85; }
+  50%  { transform: translate3d(14px, -60px, 0) rotate(18deg) scale(.9); }
+  85%  { opacity: .5; }
+  100% { transform: translate3d(-8px, -150px, 0) rotate(-14deg) scale(1.05); opacity: 0; }
+}
+
+
+/* ==================== 3. Detalles dorados ==================== */
+
+/* Línea separadora con brillo que la recorre.
+   El brillo es un ::after movido con transform (GPU), no background-position. */
+.gold-rule { height: 1px; position: relative; overflow: hidden;
+             background: linear-gradient(90deg, transparent, #C9A24B55 18%, #C9A24B 50%, #C9A24B55 82%, transparent); }
+
+/* Acento en cursiva del título del hero: degradado dorado fijo (cero repaint) */
+.wm-anim { background: linear-gradient(105deg, #E8CB85, #C9A24B 55%, #A6812A);
+           -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+/* Pincelada dorada que se dibuja bajo los títulos al aparecer */
+section h2 { position: relative; display: inline-block; padding-bottom: .35rem; }
+section h2::after {
+  content: ''; position: absolute; left: 0; bottom: 0; height: 3px; width: 100%;
+  border-radius: 999px; transform-origin: left center; transform: scaleX(0);
+  background: linear-gradient(90deg, #C9A24B, #E3C77A 60%, transparent);
+  transition: transform 1s cubic-bezier(0.22,1,0.36,1) .25s;
+}
+.reveal.in h2::after { transform: scaleX(1); }
+
+
+/* ==================== Navegación del header ==================== */
+.nav-link {
+  font-size: .875rem; color: #B8AE9E; position: relative; padding: .25rem 0;
+  transition: color .2s ease;
+}
+.nav-link:hover { color: #F4EFE7; }
+.nav-link::after {
+  content: ''; position: absolute; left: 0; bottom: -2px; height: 1.5px; width: 100%;
+  background: linear-gradient(90deg, #C9A24B, #E3C77A);
+  transform: scaleX(0); transform-origin: left center; transition: transform .25s ease;
+}
+.nav-link:hover::after { transform: scaleX(1); }
+
+
+/* ==================== Hero y encabezados de sección ==================== */
+/* Badge: pequeña píldora dorada discreta. Se usa en el Hero y como
+   "eyebrow" de cada sección para un lenguaje visual consistente. */
+.hero-badge,
+.section-badge {
+  display: inline-flex; align-items: center; gap: .5rem;
+  font-size: .72rem; letter-spacing: .16em; text-transform: uppercase;
+  color: #E3C77A;
+  border: 1px solid #C9A24B40; border-radius: 999px;
+  padding: .42rem .95rem; background: rgba(201,162,75,0.06);
+}
+
+/* CTA principal con ícono de WhatsApp */
+.btn-primary {
+  display: inline-flex; align-items: center; justify-content: center; gap: .55rem;
+  transition: background-color .25s ease, transform .25s ease, box-shadow .25s ease;
+  box-shadow: 0 10px 30px -12px #C9A24Baa;
+}
+.btn-primary:hover { transform: translateY(-1px); }
+
+/* Prueba social */
+.hero-trust {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
+  gap: .5rem .9rem; font-size: .92rem;
+}
+.hero-stars { color: #C9A24B; letter-spacing: .08em; font-size: .95rem; }
+.hero-sep { color: #C9A24B; }
+.hero-trust svg { width: .9rem; height: .9rem; color: #C9A24B; flex-shrink: 0; }
+
+/* Información local */
+.hero-local {
+  display: inline-flex; align-items: center; gap: .4rem;
+  font-size: .85rem; color: #B8AE9E;
+}
+.hero-local svg { width: 1rem; height: 1rem; color: #C9A24B; flex-shrink: 0; }
+
+/* Barra de beneficios bajo el Hero */
+.benefits-bar {
+  border-top: 1px solid #2A2724; border-bottom: 1px solid #2A2724;
+  background: rgba(16,15,14,0.55);
+}
+.benefit {
+  display: flex; align-items: center; justify-content: center; gap: .55rem;
+  text-align: center; padding: .95rem .4rem;
+  font-size: .8rem; color: #D8CFC0;
+}
+.benefit svg { width: 1.05rem; height: 1.05rem; color: #C9A24B; flex-shrink: 0; }
+@media (min-width: 768px) {
+  .benefit + .benefit { border-left: 1px solid #2A2724; }
+}
+
+/* Indicador de scroll */
+.scroll-cue {
+  display: flex; flex-direction: column; align-items: center; gap: .3rem;
+  width: max-content; margin: 1.4rem auto 2.4rem;
+  color: #B8AE9E; font-size: .66rem; letter-spacing: .22em; text-transform: uppercase;
+}
+.scroll-cue svg {
+  width: 1.1rem; height: 1.1rem; color: #C9A24B;
+  animation: cue-bounce 1.9s ease-in-out infinite;
+}
+@keyframes cue-bounce {
+  0%, 100% { transform: translateY(0);   opacity: .55; }
+  50%      { transform: translateY(5px); opacity: 1; }
+}
+
+
+/* ==================== Botón flotante de reserva ==================== */
+/* Píldora-círculo dorada con anillo que se llena al bajar */
+#fab-reservar {
+  position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 50;
+  width: 3.5rem; height: 3.5rem; border-radius: 999px;
+  display: flex; align-items: center; justify-content: center;
+  background: #C9A24B; color: #121110; text-decoration: none;
+  box-shadow: 0 8px 28px -8px #C9A24Baa;
+  opacity: 0; transform: translateY(16px) scale(.9); pointer-events: none;
+  transition: opacity .4s ease, transform .4s cubic-bezier(0.34,1.56,0.64,1), background-color .25s ease;
+}
+#fab-reservar.show { opacity: 1; transform: none; pointer-events: auto; }
+#fab-reservar:hover { background: #E3C77A; }
+
+#fab-reservar svg { position: absolute; inset: -5px; width: calc(100% + 10px); height: calc(100% + 10px);
+                    transform: rotate(-90deg); pointer-events: none; }
+#fab-reservar .fab-ring-bg { fill: none; stroke: #C9A24B33; stroke-width: 2.5; }
+#fab-reservar .fab-ring    { fill: none; stroke: #E3C77A; stroke-width: 2.5; stroke-linecap: round;
+                             stroke-dasharray: 131.9; stroke-dashoffset: 131.9; }
+
+#fab-reservar .fab-icon  { font-size: 1.35rem; line-height: 1; }
+#fab-reservar .fab-label {
+  position: absolute; right: calc(100% + .6rem); top: 50%; transform: translateY(-50%) translateX(6px);
+  background: #1B1917; color: #E3C77A; border: 1px solid #2A2724;
+  font-size: .75rem; font-weight: 500; padding: .3rem .7rem; border-radius: 999px;
+  white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity .25s ease, transform .25s ease;
+}
+#fab-reservar:hover .fab-label,
+#fab-reservar.full .fab-label { opacity: 1; transform: translateY(-50%); }
+
+/* Cuando el anillo se completa (final de página), el botón late invitando a reservar */
+#fab-reservar.full { animation: fab-pulse 1.8s ease-in-out infinite; }
+@keyframes fab-pulse {
+  0%, 100% { box-shadow: 0 8px 28px -8px #C9A24Baa; }
+  50%      { box-shadow: 0 8px 34px -4px #C9A24B, 0 0 0 8px #C9A24B22; }
+}
+
+
+/* ==================== Figuras decorativas del rubro ==================== */
+/* Glifos grandes (flores y destellos), marca de agua sutil en #2F2716.
+   Estáticos: sin animación = sin coste de composición por frame. */
+.deco { position: absolute; z-index: -1; line-height: 1; color: #2F2716;
+        pointer-events: none; user-select: none; opacity: .85; }
+
+.deco-1 { font-size: 11rem; top: 2rem;   right: -2.5rem; }                       /* hero — flor */
+.deco-2 { font-size: 8rem;  top: 4rem;   right: 0; }                             /* servicios — destello */
+.deco-3 { font-size: 9rem;  bottom: 1rem; left: -2rem; }                          /* galería — flor */
+.deco-4 { font-size: 7rem;  top: 3rem;   right: 1rem; }                            /* horarios — destello */
+.deco-5 { font-size: 8rem;  bottom: 2rem; right: -2rem; }                         /* reservar — flor */
+
+/* Separadores: línea dorada con flor giratoria al centro */
+.divider { display: flex; align-items: center; gap: .9rem; max-width: 28rem; margin: 0 auto; }
+.divider .gold-rule { flex: 1; }
+.divider-glyph { color: #C9A24B; font-size: 1.1rem; line-height: 1; }
+
+
+/* ==================== 4. Micro-interacciones ==================== */
+
+/* Elevación de tarjetas de servicio al pasar el cursor */
+#servicios article        { transition: transform .4s cubic-bezier(0.34,1.56,0.64,1), border-color .3s ease, box-shadow .4s ease; }
+#servicios article:hover  { transform: translateY(-6px); border-color: #C9A24B;
+                            box-shadow: 0 20px 48px -18px #C9A24B55; }
+
+/* Reflejo que cruza los botones dorados al pasar el cursor */
+.bg-gold        { position: relative; overflow: hidden; }
+.bg-gold::after { content: ''; position: absolute; top: 0; left: -130%; width: 55%; height: 100%;
+                  pointer-events: none; transform: skewX(-20deg);
+                  background: linear-gradient(120deg, transparent, #ffffff55, transparent); }
+.bg-gold:hover::after { animation: sheen 1s cubic-bezier(0.4,0,0.2,1); }
+@keyframes sheen { to { left: 155%; } }
+
+/* Transición de links y botones */
+a, button { transition: color .25s ease, background-color .25s ease, border-color .25s ease, box-shadow .25s ease, opacity .25s ease; }
+
+
+/* ==================== Tarjetas de "Horarios y ubicación" ==================== */
+.info-card {
+  transition: transform .4s cubic-bezier(0.34,1.56,0.64,1), border-color .3s ease, box-shadow .4s ease;
+}
+.info-card:hover {
+  transform: translateY(-6px);
+  border-color: #C9A24B;
+  box-shadow: 0 20px 48px -18px #C9A24B55;
+}
+/* Insignia circular para el ícono de cada tarjeta */
+.info-ico {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 2.6rem; height: 2.6rem; flex-shrink: 0; border-radius: 50%;
+  color: #C9A24B;
+  background: radial-gradient(circle at 30% 30%, #C9A24B26, #C9A24B0d);
+  border: 1px solid #C9A24B44;
+  transition: color .3s ease, border-color .3s ease, box-shadow .3s ease;
+}
+.info-card:hover .info-ico {
+  color: #E3C77A; border-color: #C9A24B;
+  box-shadow: 0 0 18px -2px #C9A24B66;
+}
+.info-ico svg { width: 1.2rem; height: 1.2rem; }
+
+/* Píldoras para redes sociales y medios de pago */
+.pay-pill, .social-pill {
+  display: inline-flex; align-items: center; gap: .4rem;
+  font-size: .8rem; color: #F4EFE7;
+  background: #121110; border: 1px solid #2A2724;
+  border-radius: 999px; padding: .35rem .8rem;
+  transition: border-color .2s ease, color .2s ease, background-color .2s ease;
+}
+.social-pill:hover { border-color: #C9A24B; color: #E3C77A; }
+.pay-pill::before {
+  content: ''; width: .4rem; height: .4rem; border-radius: 50%;
+  background: #C9A24B; flex-shrink: 0;
+}
+
+
+/* ==================== Placeholder de fotos (imágenes en blanco) ==================== */
+/* Mientras no haya fotos reales del salón, los espacios quedan reservados
+   con una textura a rayas sutil y un glifo dorado al centro. */
+.photo-slot {
+  background: repeating-linear-gradient(135deg, #16140f, #16140f 12px, #181611 12px, #181611 24px);
+  display: flex; align-items: center; justify-content: center; flex-direction: column;
+  gap: .35rem; color: #C9A24B; position: relative; overflow: hidden;
+}
+.photo-slot .slot-glyph { font-size: 2rem; line-height: 1; opacity: .8; }
+.photo-slot .slot-text  { font-size: .7rem; letter-spacing: .18em; text-transform: uppercase;
+                          color: #B8AE9E; }
+
+
+/* ==================== 5. Aparición al hacer scroll ==================== */
+.reveal     { opacity: 0; transform: translateY(22px); transition: opacity .6s cubic-bezier(0.22,1,0.36,1), transform .6s cubic-bezier(0.22,1,0.36,1); }
+.reveal.in  { opacity: 1; transform: none; }
+
+
+/* ==================== 6. Accesibilidad ==================== */
+a:focus-visible, button:focus-visible, input:focus-visible,
+select:focus-visible, textarea:focus-visible {
+  outline: 2px solid #E3C77A; outline-offset: 2px; border-radius: 4px;
+}
+
+/* ==================== Carrusel de servicios (CSS puro con radios) ==================== */
+/* Adaptado del pen "Pure CSS carousel" (pascaloliv): menú vertical a la
+   izquierda; al marcar un radio, su panel se desliza desde arriba (slidein)
+   y el anterior sale hacia arriba (slideout). Sin JS. Se anima solo
+   transform + opacity (GPU) en lugar de `top` para no afectar el layout. */
+.svc-carousel {
+  position: relative;
+  display: flex;
+  height: 420px;
+  border: 1px solid #2A2724;
+  border-radius: 1rem;
+  background-color: #1B1917;
+  overflow: hidden;
+}
+
+/* --- Menú lateral (lista de radios) --- */
+.svc-list {
+  list-style: none; margin: 0; padding: 0;
+  width: 250px; flex-shrink: 0;
+  display: flex; flex-direction: column; justify-content: center;
+  border-right: 1px solid #2A2724;
+  z-index: 2;
+}
+.svc-item input[type="radio"] { display: none; }
+
+.svc-item label {
+  display: flex; align-items: center; gap: .75rem;
+  height: 56px; padding: 0 1.25rem;
+  color: #B8AE9E; opacity: .6; cursor: pointer;
+  border-right: 3px solid transparent;
+  transition: opacity .25s ease, color .25s ease, border-color .25s ease, background-color .25s ease;
+}
+.svc-item label .svc-ico { font-size: 1.2rem; line-height: 1; color: #C9A24B; opacity: .85; }
+.svc-item label:hover { opacity: .9; background: #C9A24B11; }
+
+.svc-item input:checked ~ label {
+  opacity: 1; color: #E3C77A;
+  border-right-color: #C9A24B;
+  background: linear-gradient(90deg, transparent, #C9A24B14);
+}
+
+/* --- Panel de contenido (zona derecha) --- */
+/* Oculto arriba por defecto (slideout); el seleccionado entra (slidein). */
+.svc-panel {
+  position: absolute; left: 250px; right: 0; top: 0; bottom: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: .85rem; text-align: center; padding: 2rem;
+  opacity: 0; transform: translateY(-100%); pointer-events: none;
+  transition: opacity .7s cubic-bezier(0.455,0.03,0.515,0.955),
+              transform .7s cubic-bezier(0.455,0.03,0.515,0.955);
+  will-change: transform, opacity;
+}
+.svc-item input:checked ~ .svc-panel {
+  opacity: 1; transform: translateY(0); pointer-events: auto;
+}
+.svc-panel .svc-panel-ico {
+  font-size: 3rem; line-height: 1; color: #C9A24B; text-shadow: 0 0 18px #C9A24B66;
+}
+.svc-panel h3 { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: #F4EFE7; }
+.svc-panel p  { color: #B8AE9E; font-size: .9rem; max-width: 44ch; line-height: 1.65; }
+.svc-panel a  { font-size: .8rem; color: #C9A24B; border-bottom: 1px solid #C9A24B55; padding-bottom: 1px; }
+.svc-panel a:hover { color: #E3C77A; border-color: #E3C77A; }
+
+@media (max-width: 640px) {
+  .svc-carousel { height: 440px; }
+  .svc-list { width: 142px; }
+  .svc-item label { height: 52px; padding: 0 .8rem; font-size: .82rem; gap: .5rem; }
+  .svc-item label .svc-ico { font-size: 1rem; }
+  .svc-panel { left: 142px; padding: 1.25rem; }
+  .svc-panel .svc-panel-ico { font-size: 2.4rem; }
+  .svc-panel h3 { font-size: 1.3rem; }
+  .svc-panel p  { font-size: .82rem; }
+}
+
+/* ==================== Tira continua de galería ==================== */
+.strip-wrap {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+          mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+}
+
+.strip-track {
+  display: flex;
+  gap: 12px;
+  width: max-content;
+  animation: strip-scroll 40s linear infinite;
+  will-change: transform;
+}
+.strip-track:hover { animation-play-state: paused; }
+
+.strip-slot {
+  height: 260px;
+  width: 195px;
+  aspect-ratio: 3 / 4;
+  border-radius: 14px;
+  border: 1px solid #2A2724;
+  flex-shrink: 0;
+  cursor: zoom-in;
+  transition: border-color .25s ease, box-shadow .25s ease;
+}
+.strip-slot:hover { border-color: #C9A24B; box-shadow: 0 0 22px -6px #C9A24B88; }
+
+
+/* ==================== Visor de galería (lightbox) ==================== */
+#lightbox {
+  position: fixed; inset: 0; z-index: 999;
+  display: flex; align-items: center; justify-content: center; gap: 14px;
+  background: rgba(10, 9, 8, 0.92);
+  -webkit-backdrop-filter: blur(5px);
+          backdrop-filter: blur(5px);
+  opacity: 0; pointer-events: none;
+  transition: opacity .3s ease;
+}
+#lightbox.open { opacity: 1; pointer-events: auto; }
+
+#lb-stage {
+  width: min(82vw, 430px);
+  height: min(74vh, 580px);
+  border: 1px solid #C9A24B55;
+  border-radius: 16px;
+  background: rgba(27, 25, 23, 0.6);
+  box-shadow: 0 0 80px rgba(201, 162, 75, 0.18);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: .6rem; overflow: hidden;
+  transition: opacity .2s ease, transform .25s cubic-bezier(0.22,1,0.36,1);
+}
+#lb-stage.fade { opacity: 0; transform: scale(.97); }
+#lb-stage img { width: 100%; height: 100%; object-fit: cover; }
+#lb-stage .slot-glyph { font-size: 4.5rem; color: #C9A24B; text-shadow: 0 0 22px #C9A24B66; }
+#lb-stage .slot-text  { font-size: .85rem; letter-spacing: .2em; text-transform: uppercase; color: #B8AE9E; }
+
+#lb-close {
+  position: fixed; top: 1.1rem; right: 1.4rem;
+  font-size: 1.9rem; line-height: 1; color: #B8AE9E;
+  background: none; border: none; cursor: pointer; z-index: 2;
+}
+#lb-close:hover { color: #E3C77A; }
+
+#lb-prev, #lb-next {
+  width: 2.8rem; height: 2.8rem; flex-shrink: 0; border-radius: 50%;
+  background: rgba(18, 17, 16, 0.7); border: 1px solid #2A2724; color: #C9A24B;
+  font-size: 1.2rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+#lb-prev:hover, #lb-next:hover { background: #C9A24B; border-color: #C9A24B; color: #121110; }
+
+#lb-count {
+  position: fixed; left: 0; right: 0; bottom: 1.4rem; text-align: center;
+  color: #B8AE9E; font-size: .8rem; letter-spacing: .12em;
+}
+
+@keyframes strip-scroll {
+  0%   { transform: translate3d(0,0,0); }
+  100% { transform: translate3d(-50%,0,0); } /* 50% = el set original, el duplicado toma el relevo */
+}
+
+/* ==================== Dato llamativo ==================== */
+.price-tag {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  background: linear-gradient(105deg, #EFD491, #C9A24B 55%, #A6812A);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Apaga todas las animaciones para quienes prefieren menos movimiento */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .glow-1, .glow-2, .glow-3, .gold-rule::after, .sparkle, .sparkle-glyph,
+  .deco, .divider-glyph, .plant, #fab-reservar, .scroll-cue svg,
+  .strip-track, .bg-gold:hover::after { animation: none !important; }
+  section h2::after { transition: none; }
+  .svc-panel { transition: opacity .2s ease; }
+}

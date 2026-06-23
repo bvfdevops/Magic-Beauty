@@ -1,0 +1,460 @@
+<!doctype html>
+<!--
+  ============================================================
+  Magic Beauty — Landing (Salón de belleza y barbería · San Miguel)
+  Estructura del proyecto:
+    index.html              -> esta página (estructura)
+    css/styles.css          -> estilos y animaciones
+    js/tailwind.config.js   -> colores y tipografías de marca
+    js/main.js              -> lógica (config, formulario WhatsApp, efectos)
+
+  REEMPLAZAR ANTES DE PUBLICAR (ver README.md):
+    - WhatsApp, Instagram y Facebook .. en js/main.js (CONFIG)
+    - Fotos ........................... bloques "photo-slot" (hoy en blanco)
+    - Precios ......................... el salón los confirma (no inventados)
+  NO se inventan precios ni fotos. Lo que falta queda como placeholder.
+  ============================================================
+-->
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Magic Beauty — Salón de belleza y barbería en San Miguel</title>
+  <meta name="description" content="Magic Beauty: peluquería, barbería, tratamientos capilares y estética en San Miguel, Santiago. Revisa nuestros servicios y reserva tu hora por WhatsApp." />
+  <meta property="og:title" content="Magic Beauty — Belleza y Barbería" />
+  <meta property="og:description" content="Peluquería, barbería, tratamientos capilares y estética en San Miguel. Reserva por WhatsApp." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="og-image.jpg" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23121110'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='%23C9A24B' font-family='Georgia,serif'>M</text></svg>" />
+
+  <!-- Tipografías -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind + configuración de marca -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="js/tailwind.config.js"></script>
+
+  <!-- Estilos propios -->
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="font-sans antialiased">
+
+  <!-- Fondo ambiental animado -->
+  <div class="bg-fx" aria-hidden="true">
+    <span class="glow glow-1"></span>
+    <span class="glow glow-2"></span>
+    <span class="glow glow-3"></span>
+
+    <!-- Ramas doradas decorativas (se mecen suavemente) -->
+    <svg class="plant plant-1" viewBox="0 0 200 320" fill="none">
+      <defs>
+        <path id="leaf" d="M0,0 C12,-9 28,-9 38,0 C28,9 12,9 0,0 Z" fill="currentColor" />
+      </defs>
+      <path d="M100,320 C92,250 108,180 98,110 C94,75 102,40 100,10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+      <use href="#leaf" transform="translate(97,265) rotate(-35)" />
+      <use href="#leaf" transform="translate(99,235) rotate(210)" />
+      <use href="#leaf" transform="translate(101,200) rotate(-30)" />
+      <use href="#leaf" transform="translate(99,168) rotate(212)" />
+      <use href="#leaf" transform="translate(97,135) rotate(-28)" />
+      <use href="#leaf" transform="translate(98,100) rotate(208)" />
+      <use href="#leaf" transform="translate(100,68) rotate(-25)" />
+      <use href="#leaf" transform="translate(100,38) rotate(205)" />
+      <circle cx="100" cy="10" r="4" fill="currentColor" />
+    </svg>
+    <svg class="plant plant-2" viewBox="0 0 200 320" fill="none">
+      <path d="M100,320 C92,250 108,180 98,110 C94,75 102,40 100,10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+      <use href="#leaf" transform="translate(97,265) rotate(-35)" />
+      <use href="#leaf" transform="translate(99,235) rotate(210)" />
+      <use href="#leaf" transform="translate(101,200) rotate(-30)" />
+      <use href="#leaf" transform="translate(99,168) rotate(212)" />
+      <use href="#leaf" transform="translate(97,135) rotate(-28)" />
+      <use href="#leaf" transform="translate(98,100) rotate(208)" />
+      <use href="#leaf" transform="translate(100,68) rotate(-25)" />
+      <use href="#leaf" transform="translate(100,38) rotate(205)" />
+      <circle cx="100" cy="10" r="4" fill="currentColor" />
+    </svg>
+  </div>
+  <div class="bg-grid" aria-hidden="true"></div>
+
+  <!-- NAV -->
+  <header class="sticky top-0 z-40 bg-ink/95 border-b hairline">
+    <div class="max-w-4xl mx-auto px-5 h-16 flex items-center justify-between gap-4">
+      <a href="#inicio" class="font-display text-xl tracking-wide text-goldlt shrink-0">Magic Beauty</a>
+      <nav class="hidden md:flex items-center gap-7">
+        <a href="#servicios" class="nav-link">Servicios</a>
+        <a href="#galeria" class="nav-link">Galería</a>
+        <a href="#info" class="nav-link">Horarios y ubicación</a>
+      </nav>
+      <a href="#reservar" class="text-sm font-medium text-ink bg-gold hover:bg-goldlt transition-colors px-4 py-2 rounded-full shrink-0">Reservar</a>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section id="inicio" class="relative overflow-hidden">
+    <div class="max-w-3xl mx-auto px-5 pt-14 pb-10 md:pt-24 md:pb-14 text-center reveal">
+      <!-- Badge superior -->
+      <span class="hero-badge">
+        <span aria-hidden="true">&#10038;</span> Belleza &amp; Barbería · San Miguel
+      </span>
+
+      <!-- Headline: punto focal -->
+      <h1 class="font-display text-[2.6rem] leading-[1.05] md:text-6xl text-cream mt-6">
+        Tu mejor versión<br><span class="italic wm-anim">empieza aquí</span>
+      </h1>
+
+      <!-- Subheadline -->
+      <p class="mt-5 text-warm max-w-xl mx-auto text-base md:text-lg leading-relaxed">
+        Transformamos tu imagen con color, cortes, tratamientos capilares y estética profesional en San Miguel.
+      </p>
+
+      <!-- CTAs -->
+      <div class="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+        <a href="#reservar" class="btn-primary bg-gold hover:bg-goldlt text-ink font-semibold px-7 py-3.5 rounded-full">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="w-5 h-5"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.004c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 1.67a8.2 8.2 0 0 1 5.83 2.42 8.2 8.2 0 0 1 2.42 5.83c0 4.54-3.7 8.24-8.25 8.24a8.2 8.2 0 0 1-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24Zm4.74 11.13c-.26-.13-1.52-.75-1.76-.84-.24-.09-.41-.13-.59.13-.17.26-.67.84-.82 1.01-.15.17-.3.2-.56.07-.26-.13-1.09-.4-2.07-1.28-.77-.68-1.28-1.53-1.43-1.79-.15-.26-.02-.4.11-.53.12-.12.26-.3.39-.46.13-.15.17-.26.26-.43.09-.17.04-.32-.02-.45-.07-.13-.59-1.42-.81-1.94-.21-.51-.43-.44-.59-.45h-.5c-.17 0-.45.06-.68.32-.24.26-.9.88-.9 2.15 0 1.27.92 2.49 1.05 2.66.13.17 1.8 2.75 4.36 3.86.61.26 1.08.42 1.45.54.61.19 1.17.17 1.61.1.49-.07 1.52-.62 1.73-1.22.21-.6.21-1.11.15-1.22-.06-.11-.24-.17-.5-.3Z"/></svg>
+          Reservar mi hora
+        </a>
+        <a href="#servicios" class="border hairline hover:border-gold text-cream px-7 py-3.5 rounded-full transition-colors">Ver servicios</a>
+      </div>
+
+      <!-- Prueba social -->
+      <div class="hero-trust mt-7">
+        <span class="inline-flex items-center gap-1.5">
+          <span class="hero-stars" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+          <span><strong class="text-cream">4.8</strong> <span class="text-warm">valoración</span></span>
+        </span>
+        <span class="hero-sep" aria-hidden="true">·</span>
+        <span><strong class="text-cream">+500</strong> <span class="text-warm">clientes atendidos</span></span>
+      </div>
+
+      <!-- Información local -->
+      <p class="hero-local mt-3">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+        Brigadier de la Cruz 1076, San Miguel
+      </p>
+    </div>
+
+    <!-- Barra de beneficios -->
+    <div class="benefits-bar reveal">
+      <div class="max-w-4xl mx-auto px-5 grid grid-cols-2 md:grid-cols-4">
+        <p class="benefit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Atención personalizada</p>
+        <p class="benefit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Productos profesionales</p>
+        <p class="benefit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Reserva por WhatsApp</p>
+        <p class="benefit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Pago con tarjeta y transferencia</p>
+      </div>
+    </div>
+
+    <!-- Indicador de scroll -->
+    <a href="#servicios" class="scroll-cue" aria-label="Ver servicios">
+      <span>Conoce más</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+    </a>
+  </section>
+
+  <!-- SERVICIOS -->
+  <section id="servicios" class="relative overflow-hidden max-w-4xl mx-auto px-5 py-16 md:py-20">
+    <span class="deco deco-2" aria-hidden="true">&#10022;</span>
+    <div class="reveal">
+      <span class="section-badge">Lo que hacemos</span>
+      <h2 class="font-display text-3xl md:text-4xl text-cream mt-2">Servicios</h2>
+      <p class="text-warm mt-3 max-w-xl">Una propuesta integral para tu cuidado personal. Elige el servicio que buscas y reserva tu hora por WhatsApp.</p>
+    </div>
+
+    <!-- Carrusel de servicios — CSS puro con radios (adaptado del pen
+         "Pure CSS carousel"). El menú de la izquierda controla qué panel
+         se desliza desde arriba. Sin JS. -->
+    <div class="reveal mt-10 svc-carousel">
+      <ul class="svc-list">
+        <li class="svc-item">
+          <input type="radio" id="svc-pelu" name="svc_carousel" checked />
+          <label for="svc-pelu"><span class="svc-ico" aria-hidden="true">&#9988;</span><span>Peluquería</span></label>
+          <div class="svc-panel">
+            <span class="svc-panel-ico" aria-hidden="true">&#9988;</span>
+            <h3>Peluquería</h3>
+            <p>Corte femenino y masculino, lavado, brushing, peinados, alisados, coloración, mechas, balayage y corrección de color.</p>
+            <a href="#reservar">Reservar mi hora →</a>
+          </div>
+        </li>
+
+        <li class="svc-item">
+          <input type="radio" id="svc-barb" name="svc_carousel" />
+          <label for="svc-barb"><span class="svc-ico" aria-hidden="true">&#9986;</span><span>Barbería</span></label>
+          <div class="svc-panel">
+            <span class="svc-panel-ico" aria-hidden="true">&#9986;</span>
+            <h3>Barbería</h3>
+            <p>Corte clásico y moderno, perfilado y arreglo de barba. El estilo masculino bien cuidado.</p>
+            <a href="#reservar">Reservar mi hora →</a>
+          </div>
+        </li>
+
+        <li class="svc-item">
+          <input type="radio" id="svc-trat" name="svc_carousel" />
+          <label for="svc-trat"><span class="svc-ico" aria-hidden="true">&#10048;</span><span>Tratamientos capilares</span></label>
+          <div class="svc-panel">
+            <span class="svc-panel-ico" aria-hidden="true">&#10048;</span>
+            <h3>Tratamientos capilares</h3>
+            <p>Botox capilar, hidratación profunda, reconstrucción, keratina y nutrición capilar para devolver vida a tu cabello.</p>
+            <a href="#reservar">Reservar mi hora →</a>
+          </div>
+        </li>
+
+        <li class="svc-item">
+          <input type="radio" id="svc-este" name="svc_carousel" />
+          <label for="svc-este"><span class="svc-ico" aria-hidden="true">&#10084;</span><span>Estética</span></label>
+          <div class="svc-panel">
+            <span class="svc-panel-ico" aria-hidden="true">&#10084;</span>
+            <h3>Estética</h3>
+            <p>Manicure, pedicure, depilación, diseño de cejas, pestañas y maquillaje para realzar tu belleza.</p>
+            <a href="#reservar">Reservar mi hora →</a>
+          </div>
+        </li>
+
+        <li class="svc-item">
+          <input type="radio" id="svc-even" name="svc_carousel" />
+          <label for="svc-even"><span class="svc-ico" aria-hidden="true">&#10047;</span><span>Eventos</span></label>
+          <div class="svc-panel">
+            <span class="svc-panel-ico" aria-hidden="true">&#10047;</span>
+            <h3>Eventos</h3>
+            <p>Novias, graduaciones y producciones especiales. Te acompañamos en ese día que tiene que quedar perfecto.</p>
+            <a href="#reservar">Reservar mi hora →</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="divider px-5"><span class="gold-rule"></span><span class="divider-glyph" aria-hidden="true">&#10022;</span><span class="gold-rule"></span></div>
+
+  <!-- GALERÍA -->
+  <section id="galeria" class="relative overflow-hidden max-w-4xl mx-auto px-5 py-16 md:py-20">
+    <span class="deco deco-3" aria-hidden="true">&#10048;</span>
+    <div class="reveal">
+      <span class="section-badge">Nuestro trabajo</span>
+      <h2 class="font-display text-3xl md:text-4xl text-cream mt-2">Galería</h2>
+      <p class="text-warm mt-3 max-w-2xl">Próximamente: transformaciones reales de nuestros clientes. Síguenos en redes para ver el antes y después de cada trabajo.</p>
+    </div>
+
+    <!-- Tira continua de fotos (placeholders mientras llegan las reales) -->
+    <div class="reveal mt-8 strip-wrap">
+      <div class="strip-track">
+        <!-- set original -->
+        <div class="photo-slot strip-slot"><span class="slot-glyph" aria-hidden="true">&#10048;</span><span class="slot-text">Foto</span></div>
+        <div class="photo-slot strip-slot"><span class="slot-glyph" aria-hidden="true">&#9988;</span><span class="slot-text">Foto</span></div>
+        <div class="photo-slot strip-slot"><span class="slot-glyph" aria-hidden="true">&#10047;</span><span class="slot-text">Foto</span></div>
+        <div class="photo-slot strip-slot"><span class="slot-glyph" aria-hidden="true">&#9986;</span><span class="slot-text">Foto</span></div>
+        <div class="photo-slot strip-slot"><span class="slot-glyph" aria-hidden="true">&#10084;</span><span class="slot-text">Foto</span></div>
+        <div class="photo-slot strip-slot"><span class="slot-glyph" aria-hidden="true">&#10022;</span><span class="slot-text">Foto</span></div>
+        <!-- duplicado para bucle sin corte -->
+        <div class="photo-slot strip-slot" aria-hidden="true"><span class="slot-glyph">&#10048;</span><span class="slot-text">Foto</span></div>
+        <div class="photo-slot strip-slot" aria-hidden="true"><span class="slot-glyph">&#9988;</span><span class="slot-text">Foto</span></div>
+        <div class="photo-slot strip-slot" aria-hidden="true"><span class="slot-glyph">&#10047;</span><span class="slot-text">Foto</span></div>
+        <div class="photo-slot strip-slot" aria-hidden="true"><span class="slot-glyph">&#9986;</span><span class="slot-text">Foto</span></div>
+        <div class="photo-slot strip-slot" aria-hidden="true"><span class="slot-glyph">&#10084;</span><span class="slot-text">Foto</span></div>
+        <div class="photo-slot strip-slot" aria-hidden="true"><span class="slot-glyph">&#10022;</span><span class="slot-text">Foto</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider px-5"><span class="gold-rule"></span><span class="divider-glyph" aria-hidden="true">&#10022;</span><span class="gold-rule"></span></div>
+
+  <!-- HORARIOS Y UBICACIÓN -->
+  <section id="info" class="relative overflow-hidden max-w-4xl mx-auto px-5 py-16 md:py-20">
+    <span class="deco deco-4" aria-hidden="true">&#10021;</span>
+    <div class="reveal">
+      <span class="section-badge">Visítanos</span>
+      <h2 class="font-display text-3xl md:text-4xl text-cream mt-2">Horarios y ubicación</h2>
+      <p class="text-warm mt-3 max-w-2xl">Estamos en el corazón de San Miguel. Reserva tu hora y te esperamos.</p>
+    </div>
+
+    <div class="reveal mt-8 grid md:grid-cols-2 gap-5">
+      <!-- Horarios -->
+      <div class="info-card bg-char border hairline rounded-2xl p-6">
+        <div class="flex items-center gap-3">
+          <span class="info-ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          </span>
+          <p class="text-xs text-gold tracking-widest uppercase">Horario de atención</p>
+        </div>
+        <ul class="mt-5 text-sm divide-y divide-hair">
+          <li class="flex justify-between gap-4 py-2.5"><span class="text-cream">Martes a Jueves</span><span class="text-warm">11:30 – 20:00</span></li>
+          <li class="flex justify-between gap-4 py-2.5"><span class="text-cream">Viernes</span><span class="text-warm">11:30 – 20:30</span></li>
+          <li class="flex justify-between gap-4 py-2.5"><span class="text-cream">Sábado</span><span class="text-warm">11:00 – 19:30</span></li>
+          <li class="flex justify-between items-center gap-4 py-2.5"><span class="text-cream">Domingo y Lunes</span><span class="text-[11px] uppercase tracking-wide text-warm/70 border border-hair rounded-full px-2 py-0.5">Cerrado</span></li>
+        </ul>
+      </div>
+
+      <!-- Dirección -->
+      <div class="info-card bg-char border hairline rounded-2xl p-6 flex flex-col">
+        <div class="flex items-center gap-3">
+          <span class="info-ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+          </span>
+          <p class="text-xs text-gold tracking-widest uppercase">Dirección</p>
+        </div>
+        <p class="mt-5 text-cream text-sm leading-relaxed">Brigadier de La Cruz 1076<br><span class="text-warm">San Miguel · Región Metropolitana, Chile</span></p>
+        <a href="https://maps.google.com/?q=Brigadier+de+La+Cruz+1076+San+Miguel" target="_blank" rel="noopener" class="mt-auto pt-4 inline-flex items-center gap-1 text-xs text-gold hover:text-goldlt">Ver en Google Maps →</a>
+      </div>
+
+      <!-- Contacto -->
+      <div class="info-card bg-char border hairline rounded-2xl p-6 flex flex-col">
+        <div class="flex items-center gap-3">
+          <span class="info-ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 3.5h3l1.5 4-2 1.2a9 9 0 0 0 4.3 4.3l1.2-2 4 1.5v3a1.8 1.8 0 0 1-1.9 1.8A14.5 14.5 0 0 1 4.7 5.4 1.8 1.8 0 0 1 6.5 3.5Z"/></svg>
+          </span>
+          <p class="text-xs text-gold tracking-widest uppercase">Contacto</p>
+        </div>
+        <p class="mt-5 text-warm text-xs">Teléfono / WhatsApp</p>
+        <p class="text-cream price-tag">+56 9 3110 2183</p>
+        <div class="mt-auto pt-4 flex flex-wrap gap-2">
+          <a id="ig" href="#" target="_blank" rel="noopener" class="social-pill">Instagram</a>
+          <a id="fb" href="#" target="_blank" rel="noopener" class="social-pill">Facebook</a>
+        </div>
+      </div>
+
+      <!-- Medios de pago -->
+      <div class="info-card bg-char border hairline rounded-2xl p-6">
+        <div class="flex items-center gap-3">
+          <span class="info-ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3 9.5h18"/><path d="M7 15h4"/></svg>
+          </span>
+          <p class="text-xs text-gold tracking-widest uppercase">Medios de pago</p>
+        </div>
+        <div class="mt-5 flex flex-wrap gap-2">
+          <span class="pay-pill">Efectivo</span>
+          <span class="pay-pill">Transferencia</span>
+          <span class="pay-pill">Tarjetas de crédito</span>
+          <span class="pay-pill">Tarjetas de débito</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider px-5"><span class="gold-rule"></span><span class="divider-glyph" aria-hidden="true">&#10022;</span><span class="gold-rule"></span></div>
+
+  <!-- RESERVAR / FORMULARIO -->
+  <section id="reservar" class="relative overflow-hidden max-w-2xl mx-auto px-5 py-16 md:py-20">
+    <span class="deco deco-5" aria-hidden="true">&#10048;</span>
+    <div class="reveal text-center flex flex-col items-center">
+      <span class="section-badge">Reserva</span>
+      <h2 class="font-display text-3xl md:text-4xl text-cream mt-2">Solicita tu hora</h2>
+      <p class="text-warm mt-3">Completa tus datos. Al enviar, se abre WhatsApp con tu solicitud lista.</p>
+      <div class="hero-trust mt-5">
+        <span class="inline-flex items-center gap-1.5">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+          <span class="text-warm">Respuesta rápida por WhatsApp</span>
+        </span>
+        <span class="hero-sep" aria-hidden="true">·</span>
+        <span class="inline-flex items-center gap-1.5">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+          <span class="text-warm">Atención personalizada</span>
+        </span>
+      </div>
+    </div>
+
+    <div class="reveal mt-8 bg-char border hairline rounded-2xl p-6 md:p-8 space-y-4">
+      <div class="grid sm:grid-cols-2 gap-4">
+        <label class="block"><span class="text-sm text-warm">Nombre*</span>
+          <input id="f_nombre" type="text" class="mt-1 w-full bg-ink border hairline rounded-lg px-3 py-2.5 text-cream" placeholder="Tu nombre" /></label>
+        <label class="block"><span class="text-sm text-warm">Teléfono*</span>
+          <input id="f_tel" type="tel" inputmode="numeric" class="mt-1 w-full bg-ink border hairline rounded-lg px-3 py-2.5 text-cream" placeholder="+56 9 1234 5678" /></label>
+      </div>
+
+      <label class="block"><span class="text-sm text-warm">Correo (opcional)</span>
+        <input id="f_correo" type="email" class="mt-1 w-full bg-ink border hairline rounded-lg px-3 py-2.5 text-cream" placeholder="tucorreo@mail.com" /></label>
+
+      <fieldset id="f_servicios">
+        <legend class="text-sm text-warm mb-2">Servicio(s)* <span class="text-warm/60 font-normal">(elige uno o varios)</span></legend>
+        <div class="bg-ink border hairline rounded-lg px-3 py-3 grid sm:grid-cols-2 gap-x-4 gap-y-3">
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" class="f_svc accent-gold w-4 h-4" value="Peluquería" />
+            <span class="text-cream text-sm">Peluquería</span>
+          </label>
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" class="f_svc accent-gold w-4 h-4" value="Barbería" />
+            <span class="text-cream text-sm">Barbería</span>
+          </label>
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" class="f_svc accent-gold w-4 h-4" value="Tratamiento capilar" />
+            <span class="text-cream text-sm">Tratamiento capilar</span>
+          </label>
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" class="f_svc accent-gold w-4 h-4" value="Estética (manicure, cejas, etc.)" />
+            <span class="text-cream text-sm">Estética</span>
+          </label>
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" class="f_svc accent-gold w-4 h-4" value="Evento (novia, graduación...)" />
+            <span class="text-cream text-sm">Evento</span>
+          </label>
+        </div>
+      </fieldset>
+
+      <label class="block"><span class="text-sm text-warm">¿Qué servicio en concreto? (opcional)</span>
+        <input id="f_detalle" type="text" class="mt-1 w-full bg-ink border hairline rounded-lg px-3 py-2.5 text-cream" placeholder="Ej: corte + barba, balayage, keratina..." /></label>
+
+      <div class="grid sm:grid-cols-2 gap-4">
+        <label class="block"><span class="text-sm text-warm">Fecha deseada*</span>
+          <input id="f_fecha" type="date" class="mt-1 w-full bg-ink border hairline rounded-lg px-3 py-2.5 text-cream" /></label>
+        <label class="block"><span class="text-sm text-warm">Horario preferido*</span>
+          <input id="f_horario" type="text" class="mt-1 w-full bg-ink border hairline rounded-lg px-3 py-2.5 text-cream" placeholder="Ej: mañana, 15:00..." /></label>
+      </div>
+
+      <label class="block"><span class="text-sm text-warm">Observaciones (opcional)</span>
+        <textarea id="f_obs" rows="3" class="mt-1 w-full bg-ink border hairline rounded-lg px-3 py-2.5 text-cream" placeholder="Cuéntanos lo que necesites"></textarea></label>
+
+      <button id="enviar" class="w-full text-ink bg-gold hover:bg-goldlt transition-colors font-medium px-6 py-3 rounded-full">
+        Enviar solicitud por WhatsApp
+      </button>
+      <p id="formMsg" class="text-sm text-center min-h-[1.25rem]"></p>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="border-t hairline">
+    <!-- CTA de cierre -->
+    <div class="max-w-4xl mx-auto px-5 pt-14 text-center reveal">
+      <span class="section-badge">Te esperamos</span>
+      <h2 class="font-display text-3xl md:text-4xl text-cream mt-3">¿List@ para tu cambio?</h2>
+      <p class="text-warm mt-3 max-w-md mx-auto">Agenda en segundos. Te confirmamos tu hora por WhatsApp.</p>
+      <a href="#reservar" class="btn-primary bg-gold hover:bg-goldlt text-ink font-semibold px-7 py-3.5 rounded-full mt-6">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="w-5 h-5"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.004c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 1.67a8.2 8.2 0 0 1 5.83 2.42 8.2 8.2 0 0 1 2.42 5.83c0 4.54-3.7 8.24-8.25 8.24a8.2 8.2 0 0 1-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24Zm4.74 11.13c-.26-.13-1.52-.75-1.76-.84-.24-.09-.41-.13-.59.13-.17.26-.67.84-.82 1.01-.15.17-.3.2-.56.07-.26-.13-1.09-.4-2.07-1.28-.77-.68-1.28-1.53-1.43-1.79-.15-.26-.02-.4.11-.53.12-.12.26-.3.39-.46.13-.15.17-.26.26-.43.09-.17.04-.32-.02-.45-.07-.13-.59-1.42-.81-1.94-.21-.51-.43-.44-.59-.45h-.5c-.17 0-.45.06-.68.32-.24.26-.9.88-.9 2.15 0 1.27.92 2.49 1.05 2.66.13.17 1.8 2.75 4.36 3.86.61.26 1.08.42 1.45.54.61.19 1.17.17 1.61.1.49-.07 1.52-.62 1.73-1.22.21-.6.21-1.11.15-1.22-.06-.11-.24-.17-.5-.3Z"/></svg>
+        Reservar mi hora
+      </a>
+    </div>
+
+    <div class="max-w-4xl mx-auto px-5 py-12 text-center">
+      <div class="divider mb-10"><span class="gold-rule"></span><span class="divider-glyph" aria-hidden="true">&#10048;</span><span class="gold-rule"></span></div>
+      <p class="font-display text-2xl text-goldlt">Magic Beauty</p>
+      <p class="text-warm text-sm mt-2">Peluquería · Barbería · Tratamientos · Estética</p>
+      <p class="text-warm text-sm mt-1">Brigadier de La Cruz 1076, San Miguel</p>
+      <div class="mt-4 flex items-center justify-center gap-5 text-sm">
+        <a id="ig-foot" href="#" target="_blank" rel="noopener" class="text-cream hover:text-goldlt transition-colors">Instagram</a>
+        <a id="fb-foot" href="#" target="_blank" rel="noopener" class="text-cream hover:text-goldlt transition-colors">Facebook</a>
+      </div>
+      <p class="text-warm/60 text-xs mt-8">© <span id="year"></span> Magic Beauty · San Miguel, Santiago de Chile.</p>
+    </div>
+  </footer>
+
+  <!-- Botón flotante de reserva con anillo de progreso de scroll -->
+  <a href="#reservar" id="fab-reservar" aria-label="Ir a reservar">
+    <svg viewBox="0 0 48 48" aria-hidden="true">
+      <circle class="fab-ring-bg" cx="24" cy="24" r="21" />
+      <circle class="fab-ring" cx="24" cy="24" r="21" />
+    </svg>
+    <span class="fab-icon">&#10022;</span>
+    <span class="fab-label">Reservar</span>
+  </a>
+
+  <!-- Visor de galería (lightbox) -->
+  <div id="lightbox" aria-modal="true" role="dialog" aria-label="Vista ampliada de la galería">
+    <button id="lb-close" aria-label="Cerrar">&times;</button>
+    <button id="lb-prev" aria-label="Imagen anterior">&#8592;</button>
+    <div id="lb-stage"></div>
+    <button id="lb-next" aria-label="Imagen siguiente">&#8594;</button>
+    <span id="lb-count" aria-hidden="true"></span>
+  </div>
+
+  <!-- Lógica -->
+  <script src="js/main.js"></script>
+</body>
+</html>
